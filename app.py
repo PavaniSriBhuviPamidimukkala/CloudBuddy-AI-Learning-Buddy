@@ -22,7 +22,7 @@ def generate_ai_response(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "gemma2-9b-it",
+        "model": "llama-3.3-70b-versatile",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
@@ -30,9 +30,13 @@ def generate_ai_response(prompt):
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             # FIXED: Explicitly navigates Open-AI compatible dictionary outputs safely
-            return response.json()['choices'][0]['message']['content']
+            return response.json()['choices']['message']['content']
         else:
-            return f"⚠️ API Error (Status {response.status_code}): Please verify your GROQ_API_KEY value in your secrets dashboard."
+            try:
+                error_details = response.json()['error']['message']
+            except:
+                error_details = "Check your key status in the console."
+            return f"⚠️ API Error (Status {response.status_code}): {error_details}"
     except Exception as e:
         return f"⚠️ Connection Error: {str(e)}"
 
