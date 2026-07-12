@@ -30,7 +30,7 @@ def generate_ai_response(prompt):
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
             # FIXED: Explicitly navigates Open-AI compatible dictionary outputs safely
-            return response.json()['choices']['message']['content']
+            return response.json()['choices'][0]['message']['content']
         else:
             try:
                 error_details = response.json()['error']['message']
