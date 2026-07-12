@@ -1,102 +1,126 @@
 import streamlit as st
+import google.generativeai as genai
 
+# Page settings
 st.set_page_config(
-    page_title="CloudBuddy",
-    page_icon="☁️",
+    page_title="AI Learning Buddy",
+    page_icon="📚",
     layout="wide"
 )
 
-st.title("☁️ CloudBuddy – AI Learning Buddy")
-st.write("Welcome! Learn Cloud Computing Basics with your AI learning companion.")
+# Gemini API setup
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-menu = st.sidebar.selectbox(
-    "Choose an Activity",
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# Title
+st.title("📚 AI Learning Buddy")
+st.write("Your personal AI tutor to learn concepts easily.")
+
+# Sidebar options
+option = st.sidebar.selectbox(
+    "Choose Learning Mode",
     [
-        "Explain Topic",
-        "Real-Life Example",
-        "Quiz",
-        "About"
+        "Explain a Topic",
+        "Real World Example",
+        "Generate Quiz",
+        "Summarize Notes",
+        "Ask AI Tutor"
     ]
 )
 
-if menu == "Explain Topic":
+# Explain Topic
+if option == "Explain a Topic":
 
-    topic = st.text_input("Enter Topic")
+    topic = st.text_input("Enter the topic")
 
     if st.button("Explain"):
+        prompt = f"""
+        Explain {topic} in a simple way.
+        Include:
+        - Basic explanation
+        - Key points
+        - Important concepts
+        """
 
-        st.success("Explanation")
+        response = model.generate_content(prompt)
+        st.write(response.text)
 
-        st.write("""
-Cloud Computing means using computing resources such as storage,
-servers, databases and software over the Internet instead of
-your local computer.
 
-Benefits:
+# Real World Example
+elif option == "Real World Example":
 
-• Cost Saving
+    topic = st.text_input("Enter the topic")
 
-• Scalability
+    if st.button("Generate Examples"):
 
-• Flexibility
+        prompt = f"""
+        Give real world examples of {topic}.
+        Explain how it is used in daily life and industries.
+        """
 
-• Anywhere Access
+        response = model.generate_content(prompt)
+        st.write(response.text)
 
-• Automatic Backup
-""")
 
-elif menu == "Real-Life Example":
+# Quiz Generator
+elif option == "Generate Quiz":
 
-    st.info("""
-Example:
+    topic = st.text_input("Enter the topic")
+    number = st.slider("Number of questions", 3, 10, 5)
 
-Google Drive stores your files online.
+    if st.button("Create Quiz"):
 
-You can access them from your laptop,
-mobile or tablet anywhere.
+        prompt = f"""
+        Generate {number} unique MCQ questions on {topic}.
 
-This is Cloud Computing.
-""")
+        Include:
+        Question
+        Four options
+        Correct answer
+        Explanation
 
-elif menu == "Quiz":
+        Generate different questions every time.
+        """
 
-    st.subheader("Cloud Computing Quiz")
+        response = model.generate_content(prompt)
+        st.write(response.text)
 
-    q1 = st.radio(
-        "1. Cloud Computing uses",
-        ["Internet","USB","Bluetooth","DVD"]
-    )
 
-    q2 = st.radio(
-        "2. Which is SaaS?",
-        ["Google Docs","Router","CPU","RAM"]
-    )
+# Summarize Notes
+elif option == "Summarize Notes":
 
-    if st.button("Submit"):
+    notes = st.text_area("Paste your notes")
 
-        score=0
+    if st.button("Summarize"):
 
-        if q1=="Internet":
-            score+=1
+        prompt = f"""
+        Summarize these notes:
+        {notes}
 
-        if q2=="Google Docs":
-            score+=1
+        Provide:
+        - Short summary
+        - Important points
+        - Keywords
+        """
 
-        st.success(f"Your Score : {score}/2")
+        response = model.generate_content(prompt)
+        st.write(response.text)
 
-        if score==2:
-            st.balloons()
 
-elif menu=="About":
+# AI Tutor
+elif option == "Ask AI Tutor":
 
-    st.write("""
-CloudBuddy
+    question = st.text_area("Ask your question")
 
-Developed by
+    if st.button("Ask"):
 
-Pavani Sri Bhuvi Pamidimukkala
+        prompt = f"""
+        Act as an AI tutor.
+        Explain this question clearly:
 
-AI Learning Buddy Project
+        {question}
+        """
 
-Infosys Springboard AI EMPOW(H)ER
-""")
+        response = model.generate_content(prompt)
+        st.write(response.text)
