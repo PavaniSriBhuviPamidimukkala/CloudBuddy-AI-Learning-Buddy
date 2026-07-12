@@ -22,7 +22,7 @@ def generate_ai_response(prompt):
         "Content-Type": "application/json"
     }
     data = {
-        "model": "llama3-8b-8192",
+        "model": "gemma2-9b-it",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
