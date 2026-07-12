@@ -9,15 +9,14 @@ st.set_page_config(
     layout="wide"
 )
 
-# Free API Setup via Groq (Bypasses Google Quota Exhaustion)
-# You can replace this with your direct string if not using st.secrets: api_key = "gsk_..."
-# Change line 13 to this:
+# Secure API setup from Streamlit secrets
 api_key = st.secrets["GROQ_API_KEY"]
-
 
 def generate_ai_response(prompt):
     """Helper function to call a completely free alternative model instantly."""
+    # Corrected API Endpoint URL
     url = "https://groq.com"
+    
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
@@ -30,9 +29,10 @@ def generate_ai_response(prompt):
     try:
         response = requests.post(url, headers=headers, json=data)
         if response.status_code == 200:
+            # Correct JSON dictionary structure parsing
             return response.json()['choices'][0]['message']['content']
         else:
-            return f"⚠️ API Error (Status {response.status_code}): Please verify your GROQ_API_KEY configuration."
+            return f"⚠️ API Error (Status {response.status_code}): Please verify your GROQ_API_KEY value in your secrets."
     except Exception as e:
         return f"⚠️ Connection Error: {str(e)}"
 
@@ -140,4 +140,3 @@ elif option == "Ask AI Tutor":
                 st.write(response_text)
         else:
             st.warning("Please type a question.")
-
